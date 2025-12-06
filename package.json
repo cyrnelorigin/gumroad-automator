@@ -1,0 +1,17 @@
+{
+  "name": "gumroad-automator",
+  "version": "1.0.0",
+  "description": "Cyrnel Origin - Automated Gumroad Sales Processor",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"No tests specified\""
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "firebase-admin": "^12.0.0",
+    "resend": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
