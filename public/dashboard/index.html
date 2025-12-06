@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cyrnel Origin - Live Command Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Courier New', monospace; 
+            background: #0a0a0a; 
+            color: #00ff00; 
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 15px;
+        }
+        .header h1 { 
+            color: #ffff00; 
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .header p { 
+            color: #00ccff; 
+            font-size: 1.1rem;
+        }
+        
+        /* Stats Grid */
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 20px; 
+            margin: 30px 0;
+        }
+        .stat-card { 
+            background: linear-gradient(145deg, #1a1a1a, #222222);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 255, 0, 0.2);
+        }
+        .stat-card h2 { 
+            margin: 0; 
+            font-size: 2.8rem; 
+            color: #00ccff; 
+            font-weight: bold;
+        }
+        .stat-card p { 
+            margin: 10px 0 0; 
+            color: #aaa; 
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Sales Table */
+        .table-container {
+            background: #111;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            border: 1px solid #333;
+            overflow-x: auto;
+        }
+        .table-container h2 {
+            color: #ffff00;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+        th {
+            background: #222;
+            color: #ffff00;
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 2px solid #00ff00;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #333;
+            color: #ccc;
+        }
+        tr:hover {
+            background: #1a1a1a;
+        }
+        
+        /* Status Indicators */
+        .status-success { 
+            color: #00ff00; 
+            font-weight: bold;
+        }
+        .status-fail { 
+            color: #ff5555; 
+            font-weight: bold;
+        }
+        .status-pending { 
+            color: #ffaa00; 
+            font-weight: bold;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+        }
+        .update-time {
+            color: #00ccff;
+            font-weight: bold;
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #ffff00;
+            font-size: 1.2rem;
+        }
+        .loading:after {
+            content: ' .';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: ' .'; }
+            40% { content: ' ..'; }
+            60%, 100% { content: ' ...'; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .header h1 { font-size: 2rem; }
+            .stat-card h2 { font-size: 2.2rem; }
+            th, td { padding: 10px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🚀 CYRNEL ORIGIN COMMAND DASHBOARD</h1>
+            <p>AI Automation Store v2.0 • Live System Monitor • Real-time Analytics</p>
+        </div>
+
+        <!-- STATS GRID -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="loading">Loading live system data</div>
+        </div>
+
+        <!-- SALES TABLE -->
+        <div class="table-container">
+            <h2>🔍 Recent Sales Log (Last 50 Transactions)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Website</th>
+                        <th>Amount (ZAR)</th>
+                        <th>Time</th>
+                        <th>Audit</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody id="salesBody">
+                    <tr><td colspan="7" class="loading">Loading sales data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>System Status: <span class="status-success">● OPERATIONAL</span> | 
+               Last Updated: <span id="updateTime" class="update-time">--:--:--</span> | 
+               Auto-refresh: <span class="status-success">ENABLED</span></p>
+            <p style="margin-top: 10px; color: #444;">
+                © 2025 Cyrnel Origin • AI Angetica System • Version 2.0.1
+            </p>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // CONFIGURATION
+        const DASHBOARD_SECRET_KEY = 'Cyrnel-Origin-Dash-2025-Secure!'; // MUST match Netlify env var
+        const API_ENDPOINT = '/.netlify/functions/get-dashboard';
+        
+        // Format currency
+        function formatCurrency(amount) {
+            return 'R' + parseFloat(amount).toFixed(2);
+        }
+        
+        // Format time
+        function formatTime(dateString) {
+            if (!dateString || dateString === 'N/A') return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleString('en-ZA');
+        }
+        
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                const url = `${API_ENDPOINT}?key=${encodeURIComponent(DASHBOARD_SECRET_KEY)}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+                }
+                
+                const data = await response.json();
+                
+                // 1. UPDATE STATS CARDS
+                const stats = data.summary;
+                document.getElementById('statsGrid').innerHTML = `
+                    <div class="stat-card">
+                        <h2>${formatCurrency(stats.totalRevenue)}</h2>
+                        <p>Total Revenue Generated</p>
+                    </div>
+                    <div class="stat-card">
+                        <h2>${stats.totalSales}</h2>
+                        <p>Total Sales Processed</p>
+                    </div>
+                    <div class="stat-card">
+                        <h2>${stats.successRate}%</h2>
+                        <p>Automation Success Rate</p>
+                    </div>
+                    <div class="stat-card">
+                        <h2>${stats.successfulDeliveries}</h2>
+                        <p>Audits Delivered</p>
+                    </div>
+                `;
+                
+                // 2. UPDATE SALES TABLE
+                const salesBody = document.getElementById('salesBody');
+                if (data.recentSales.length === 0) {
+                    salesBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #ffaa00;">No sales recorded yet. Make your first sale!</td></tr>';
+                } else {
+                    salesBody.innerHTML = data.recentSales.map(sale => `
+                        <tr>
+                            <td><code style="color: #00ccff;">${sale.orderId.substring(0, 12)}...</code></td>
+                            <td>${sale.customerEmail.split('@')[0] || 'customer'}</td>
+                            <td><a href="http://${sale.businessUrl}" target="_blank" style="color: #00ff00; text-decoration: none;">${sale.businessUrl.length > 25 ? sale.businessUrl.substring(0, 25) + '...' : sale.businessUrl}</a></td>
+                            <td style="font-weight: bold;">${formatCurrency(sale.amount)}</td>
+                            <td>${sale.timestamp}</td>
+                            <td class="status-${sale.auditGenerated ? 'success' : 'fail'}">${sale.auditGenerated ? '✅' : '❌'}</td>
+                            <td class="status-${sale.emailDelivered ? 'success' : 'fail'}">${sale.emailDelivered ? '✅' : '❌'}</td>
+                        </tr>
+                    `).join('');
+                }
+                
+                // 3. UPDATE TIMESTAMP
+                document.getElementById('updateTime').textContent = new Date().toLocaleTimeString('en-ZA');
+                
+            } catch (error) {
+                console.error('Dashboard load failed:', error);
+                document.getElementById('statsGrid').innerHTML = `
+                    <div class="stat-card" style="grid-column: 1 / -1; color: #ff5555;">
+                        <h2>⚠️ SYSTEM ERROR</h2>
+                        <p>Failed to load dashboard data: ${error.message}</p>
+                        <p style="font-size: 0.8rem; margin-top: 10px;">Check browser console and Netlify logs</p>
+                    </div>`;
+            }
+        }
+        
+        // Initial load and auto-refresh every 30 seconds
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboard();
+            setInterval(loadDashboard, 30000); // Refresh every 30 seconds
+        });
+    </script>
+</body>
+</html>
